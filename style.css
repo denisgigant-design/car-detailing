@@ -11,6 +11,13 @@ h1,h2,h3{font-weight:550;letter-spacing:-.055em;line-height:1.04}h1{font-size:cl
 @media(prefers-reduced-motion:reduce){*,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 .tour-track { position: relative; }
+html.touch-tour { overflow: hidden; }
+.touch-tour body {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: none;
+}
 .tour-sticky { position: sticky; top: 0; background: #101316; }
 .tour-track { overflow-anchor: none; }
 .tour-travel { height: clamp(1350px, 280svh, 2700px); pointer-events: none; }
@@ -27,7 +34,7 @@ h1,h2,h3{font-weight:550;letter-spacing:-.055em;line-height:1.04}h1{font-size:cl
   position: absolute;
   bottom: 4%; left: 3.5%;
   margin: 0; color: var(--accent);
-  font: italic 500 clamp(38px, 5vw, 82px)/1 Georgia, serif;
+  font: italic 500 clamp(42px, 7vw, 112px)/1 Georgia, serif;
   letter-spacing: -.055em;
   text-shadow: 0 2px 6px #000b, 0 0 22px #0008;
 }
@@ -60,7 +67,7 @@ h1,h2,h3{font-weight:550;letter-spacing:-.055em;line-height:1.04}h1{font-size:cl
 @media (hover:hover) { .offer-image:hover img { transform: scale(1.035); } }
 .offer-copy { display: flex; flex: 1; flex-direction: column; padding: clamp(16px,2.1vw,30px); }
 .offer-copy small, .offer-link, .offer-copy h3 a:hover { color: var(--stage,var(--accent)); }
-.offer-card h3 { margin: 7px 0 10px; font: italic 500 clamp(32px,3vw,49px)/1 Georgia,serif; letter-spacing: -.045em; }
+.offer-card h3 { margin: 7px 0 10px; font: italic 500 clamp(36px,4.5vw,62px)/1 Georgia,serif; letter-spacing: -.045em; }
 .offer-copy p { margin: 0 0 12px; }
 .offer-rate { font-size: 22px; color: #eaf3f7; }
 .offer-rate span, .treatment-price span { color: #b5c0c4; font-size: 14px; }
@@ -105,15 +112,13 @@ h1,h2,h3{font-weight:550;letter-spacing:-.055em;line-height:1.04}h1{font-size:cl
   .offer-menu .note { margin-bottom: 0; }
 }
 
-/* On touch screens, the address bar can change the visible height during a swipe. */
-@media (hover: none) and (pointer: coarse) {
-  .tour-travel { height: clamp(1350px, 460vw, 2700px); }
-}
+/* Keep film progress independent of the browser toolbar's height. */
+.touch-tour .tour-travel { height: clamp(1350px, 460vw, 2700px); }
 
 @media (max-width: 660px) and (hover: none) and (orientation: portrait) {
   .film-plane { width: 100%; aspect-ratio: 1.14; }
   .film-plane video { object-fit: cover; object-position: 50% 50%; }
-  .film-title { top: 2%; bottom: auto; left: 3%; font-size: clamp(25px,7vw,41px); }
+  .film-title { top: 2%; bottom: auto; left: 3%; font-size: clamp(32px,9vw,54px); }
   .tour-toolbar { padding-inline: 4vw; }
   .tour-stages { gap: 8px; }
 }

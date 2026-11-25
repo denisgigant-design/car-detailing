@@ -90,6 +90,11 @@ function startTour() {
   const runway = $('.tour-travel');
   const title = $('#title');
   const chapterButtons = all('[data-jump]');
+  // Android Chrome can use a desktop layout while still scrolling by touch.
+  const useTouchScroller = navigator.maxTouchPoints > 0 &&
+    (matchMedia('(any-pointer: coarse)').matches || Math.min(screen.width, screen.height) <= 1100);
+  if (useTouchScroller) document.documentElement.classList.add('touch-tour');
+  const scroller = useTouchScroller ? document.body : window;
   let duration = 66.3;
   let desired = 0;
   let shown = 0;
@@ -98,7 +103,7 @@ function startTour() {
   const stamp = time => String(Math.floor(time / 60)).padStart(2, '0') + ':' + String(Math.floor(time % 60)).padStart(2, '0');
   function jump(time) {
     const progress = Math.max(0, Math.min(1, time / duration));
-    scrollTo({top: track.offsetTop + runway.offsetHeight * progress, behavior: 'instant'});
+    scroller.scrollTo({top: track.offsetTop + runway.offsetHeight * progress, behavior: 'instant'});
   }
   function display(time) {
     shown = time;
@@ -130,7 +135,8 @@ function startTour() {
   }
   function update() {
     frame = 0;
-    desired = Math.min(duration - .04, Math.max(0, (scrollY - track.offsetTop) / Math.max(1, runway.offsetHeight) * duration));
+    const scrollPosition = useTouchScroller ? scroller.scrollTop : window.scrollY;
+    desired = Math.min(duration - .04, Math.max(0, (scrollPosition - track.offsetTop) / Math.max(1, runway.offsetHeight) * duration));
     seek();
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(update); }
@@ -139,7 +145,7 @@ function startTour() {
   film.addEventListener('loadeddata', schedule);
   film.addEventListener('seeked', () => { display(film.currentTime); seek(); });
   film.addEventListener('error', () => { active = -1; display(desired); });
-  addEventListener('scroll', schedule, {passive:true});
+  scroller.addEventListener('scroll', schedule, {passive:true});
   new ResizeObserver(schedule).observe(runway);
   addEventListener('pageshow', schedule);
   title.addEventListener('click', event => {
@@ -151,7 +157,7 @@ function startTour() {
   function showMenu() {
     const menu = $('#services');
     const beforeMenu = menu.offsetTop;
-    scrollTo({top:track.offsetTop + runway.offsetHeight + beforeMenu, behavior:'instant'});
+    scroller.scrollTo({top:track.offsetTop + runway.offsetHeight + beforeMenu, behavior:'instant'});
     $('#menu-title').focus({preventScroll:true});
   }
   all('a[href="#services"], a[href="index.html#services"]').forEach(link => link.addEventListener('click', event => {
