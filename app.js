@@ -79,7 +79,7 @@ function mergeItems(additions, preserveUpgrade) {
 refreshCount();
 
 const tourChapters = [
-  {name:'Mini Valet', href:'mini-valet.html', start:0, color:'#d9f778'},
+  {name:'Mini Valet', href:'mini-valet.html', start:0, color:'#add9ff'},
   {name:'Full Valet', href:'full-valet.html', start:27, color:'#c7b6ff'},
   {name:'Extras', href:'extras.html', start:49.4, color:'#95e0ff'}
 ];
@@ -140,7 +140,7 @@ function startTour() {
   film.addEventListener('seeked', () => { display(film.currentTime); seek(); });
   film.addEventListener('error', () => { active = -1; display(desired); });
   addEventListener('scroll', schedule, {passive:true});
-  addEventListener('resize', schedule);
+  new ResizeObserver(schedule).observe(runway);
   addEventListener('pageshow', schedule);
   title.addEventListener('click', event => {
     const destination = new URL(tourChapters[active].href, location.href);

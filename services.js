@@ -5,7 +5,7 @@ const services = [
     "title": "Surface inspection",
     "desc": "Spot the road film, grit and marks before the first drop of foam.",
     "start": 0,
-    "color": "#e5fa79",
+    "color": "#add9ff",
     "category": "Exterior assessment",
     "steps": [
       [
@@ -269,7 +269,7 @@ const services = [
     "title": "Paint polishing",
     "desc": "Watch the bonnet reflections sharpen under the studio lights.",
     "start": 49.4,
-    "color": "#9ae6cf",
+    "color": "#a5caff",
     "category": "Paint refinement",
     "steps": [
       [
