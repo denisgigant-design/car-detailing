@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101316">
+  <title>The Citroën detailing tour · Detail Studio</title>
+  <meta name="description" content="Scroll through the Citroën detail. Choose a Mini Valet, Full Valet or specialist treatment.">
+  <link rel="stylesheet" href="style.css?v=stations-1">
+  <script defer src="services.js?v=blue-tour-1"></script>
+  <script defer src="app.js?v=stations-1"></script>
+</head>
+<body>
+<a class="skip" href="#services">Skip film and choose a valet</a>
+<header><a class="brand" href="index.html"><i aria-hidden="true"></i>Detail Studio</a>
+<nav aria-label="Main navigation"><a href="index.html#services">Valets &amp; extras</a><a class="basketBtn" href="estimate.html">Basket <b class="count">0</b></a></nav></header><main><div class="tour-track"><div class="tour-sticky"><section class="tour" aria-label="Citroën detailing film">
+<div class="tour-scene">
+<div class="station-copy"><div class="eyebrow"><em></em><span id="station-label">Maintenance valet</span></div>
+<h1 class="station-title"><a id="title" href="mini-valet.html">Mini Valet</a></h1>
+<a class="station-service" id="station-service" href="mini-valet.html">Explore service <i class="arrow" aria-hidden="true"></i></a></div>
+<div class="film-plane"><img id="still" src="rinse.jpg" alt="Rear view of the Citroën during its wash"><video muted playsinline preload="auto" aria-label="Scroll through the Citroën detail" hidden></video></div></div>
+<div class="tour-toolbar"><div class="railHead"><strong>Film tour</strong><span>Scroll to explore</span><output id="clock"></output></div><div class="tour-stages" role="group" aria-label="Film stations"><button data-jump="0" style="--stage:#add9ff"><i aria-hidden="true"></i>Mini Valet</button><button data-jump="1" style="--stage:#add9ff"><i aria-hidden="true"></i>Full Valet</button><button data-jump="2" style="--stage:#add9ff"><i aria-hidden="true"></i>Extras</button></div></div></section></div><div class="tour-travel" aria-hidden="true"></div></div><section class="comparison wrap block"><h2>Before &amp; after</h2>
+<p class="compare-caption">Slide across the same bonnet to see the change in the strip-light reflection.</p>
+<div class="compare matched"><img loading="lazy" src="bonnet-after.jpg" alt="The Citroën bonnet after polishing, with a clear strip-light reflection"><img loading="lazy" class="before" src="bonnet-before.jpg" alt="The same bonnet before polishing, with haze and fine scratches"><div class="divider"></div><span class="beforeTag">Before</span><span class="afterTag">After</span><input type="range" min="0" max="100" value="50" aria-label="Amount of the before image shown" aria-valuetext="50 percent before"></div><a class="pill polish-link" href="extras.html#machine-polish">View machine polishing <i class="arrow" aria-hidden="true"></i></a></section><section class="offer-menu wrap" id="services" aria-labelledby="menu-title">
+<div class="menu-head"><h2 id="menu-title" tabindex="-1">Valets &amp; extras</h2>
+<div class="deck-controls" aria-label="Slide service cards"><button data-card-step="-1" aria-controls="offers" aria-label="Previous card">←</button><button data-card-step="1" aria-controls="offers" aria-label="Next card">→</button></div></div>
+<label class="vehicle">Vehicle size <select class="size"><option value="compact">Compact</option><option value="standard">Saloon / estate</option><option value="large">Large SUV / MPV</option></select></label>
+<div class="offer-deck" id="offers"><article class="offer-card" style="--stage:#add9ff">
+  <a class="offer-image" href="mini-valet.html" aria-label="View Mini Valet"><img loading="lazy" src="rinse.jpg" alt=""></a>
+  <div class="offer-copy"><small>Maintenance valet</small>
+  <h3><a href="mini-valet.html">Mini Valet</a></h3>
+  <p>A hand wash outside and a fresh cabin inside.</p><p class="offer-rate"><strong data-offer-price="mini-valet">€70</strong> <span data-offer-time="mini-valet">60 min</span></p>
+  <details><summary>What’s included</summary><ul><li>Body and wheels hand-washed, rinsed and towel-dried</li><li>Seats, mats and accessible carpets vacuumed</li><li>Dashboard and console wiped, glass cleaned inside and out</li></ul></details>
+  <a class="offer-link" href="mini-valet.html">View valet <i class="arrow" aria-hidden="true"></i></a></div>
+</article>
+<article class="offer-card" style="--stage:#c7b6ff">
+  <a class="offer-image" href="full-valet.html" aria-label="View Full Valet"><img loading="lazy" src="cabin.jpg" alt=""></a>
+  <div class="offer-copy"><small>Deep clean</small>
+  <h3><a href="full-valet.html">Full Valet</a></h3>
+  <p>Adds seat and carpet shampooing or leather care, plus a boot clean and spray wax.</p><p class="offer-rate"><strong data-offer-price="full-valet">€135</strong> <span data-offer-time="full-valet">150 min</span></p>
+  <details><summary>What’s included</summary><ul><li>Everything in the Mini Valet</li><li>Fabric seats, carpets and mats shampooed, or leather cleaned and conditioned</li><li>Boot, door jambs, vents and interior trim detailed</li><li>Paint finished with a protective spray wax</li></ul></details>
+  <a class="offer-link" href="full-valet.html">View valet <i class="arrow" aria-hidden="true"></i></a></div>
+</article>
+<article class="offer-card" style="--stage:#95e0ff">
+  <a class="offer-image" href="extras.html" aria-label="View Extras"><img loading="lazy" src="bonnet-after.jpg" alt=""></a>
+  <div class="offer-copy"><small>Specialist treatments</small>
+  <h3><a href="extras.html">Extras</a></h3>
+  <p>Choose a targeted treatment for lights or paint.</p><p class="offer-rate">from €80 <span>· per treatment</span></p>
+  <details><summary>Treatments &amp; prices</summary><ul><li>Headlight restoration · from €80</li><li>One-step machine polish · from €225</li><li>Three-step compound · from €450</li></ul></details>
+  <a class="offer-link" href="extras.html">Choose an extra <i class="arrow" aria-hidden="true"></i></a></div>
+</article></div>
+<p class="note">Guide prices for your selected vehicle size.</p></section></main>
+<footer class="end"><a class="brand" href="index.html"><i aria-hidden="true"></i>Detail Studio</a><nav aria-label="Footer"><a href="index.html">Film tour</a><a href="packages.html">Valets &amp; extras</a><a href="estimate.html">Basket</a></nav></footer>
+</body>
+</html>
