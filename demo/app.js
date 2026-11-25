@@ -134,6 +134,7 @@ function startTour() {
       title.textContent = chapter.name;
       $('#station-label').textContent = chapter.label;
       still.src = chapter.image;
+      $('.tour-scene').style.setProperty('--station-image', 'url("'+chapter.image+'")');
       still.alt = chapter.alt;
       buttons.forEach((b,i) => { if (i===index) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); });
     }
