@@ -2,7 +2,8 @@
 
 const $ = selector => document.querySelector(selector);
 const all = selector => [...document.querySelectorAll(selector)];
-const serviceById = new Map(services.map(service => [service.id, service]));
+const bookableServices = [...services, ...valetOffers];
+const serviceById = new Map(bookableServices.map(service => [service.id, service]));
 const basketKey = 'detail-studio-basket-v1';
 const sizeKey = 'detail-studio-vehicle';
 const sizes = {
@@ -37,11 +38,15 @@ let items = readItems();
 
 function priceFor(service, tier) {
   const [name, price, minutes, description] = service.packages[tier];
+  if (service.prices) {
+    const index = ['compact', 'standard', 'large'].indexOf(vehicle);
+    return {name, price: service.prices[index], minutes: service.times[index], description};
+  }
   const factor = sizes[vehicle].factor;
   return {name, price: Math.round(price * factor), minutes: Math.ceil(minutes * factor / 5) * 5, description};
 }
 function orderedItems(selection) {
-  return services.flatMap(service => selection.filter(item => item.id === service.id));
+  return bookableServices.flatMap(service => selection.filter(item => item.id === service.id));
 }
 function totals(selection) {
   return selection.reduce((sum, item) => {
@@ -73,116 +78,133 @@ function mergeItems(additions, preserveUpgrade) {
 }
 refreshCount();
 
+const tourChapters = [
+  {name:'Mini Valet', href:'mini-valet.html', start:0, color:'#d9f778'},
+  {name:'Full Valet', href:'full-valet.html', start:27, color:'#c7b6ff'},
+  {name:'Extras', href:'extras.html', start:49.4, color:'#95e0ff'}
+];
+
 function startTour() {
-  const film = $('video');
-  const track = $('.track');
-  const screen = $('.screen');
-  const chapters = all('[data-jump]');
-  const clock = $('#clock');
-  const pin = $('.focusPin');
-  // Normalised image positions follow the point of interest through the original camera moves.
-  const path = [[0,.5,.56],[3,.57,.53],[7,.48,.44],[12,.45,.48],[16,.5,.43],
-    [20,.57,.44],[25,.61,.56],[28,.55,.49],[32,.46,.65],[36,.45,.69],
-    [40,.54,.56],[46,.51,.5],[50,.5,.65],[54,.6,.54],[57,.62,.54],
-    [60,.6,.54],[63,.5,.56],[66.3,.51,.54]];
-  function positionPin(time) {
-    const next = path.findIndex(point => point[0] > time);
-    const [t2,x2,y2] = path[next < 0 ? path.length-1 : next];
-    const [t1,x1,y1] = path[Math.max(0, (next < 0 ? path.length-1 : next)-1)];
-    const mix = Math.max(0, Math.min(1,(time-t1)/(t2-t1 || 1)));
-    const width = screen.clientWidth, height = screen.clientHeight;
-    const scale = Math.max(width/720, height/406);
-    const x = width/2 + (x1 + mix*(x2-x1)-.5)*720*scale;
-    const y = height/2 + (y1 + mix*(y2-y1)-.5)*406*scale;
-    pin.style.left = x+'px'; pin.style.top = y+'px';
-    const copy = $('.caption');
-    pin.hidden = x<22 || x>width-22 || y<86 || y>height-108 ||
-      (x>copy.offsetLeft-22 && x<copy.offsetLeft+copy.offsetWidth+22 && y>copy.offsetTop-22 && y<copy.offsetTop+copy.offsetHeight+22);
-  }
+  const film = $('.tour video');
+  const track = $('.tour-track');
+  const runway = $('.tour-travel');
+  const title = $('#title');
+  const chapterButtons = all('[data-jump]');
   let duration = 66.3;
   let desired = 0;
+  let shown = 0;
   let active = -1;
   let frame = 0;
-  let shownTime = 0;
-  const travel = () => Math.max(1, track.offsetHeight - screen.offsetHeight);
   const stamp = time => String(Math.floor(time / 60)).padStart(2, '0') + ':' + String(Math.floor(time % 60)).padStart(2, '0');
   function jump(time) {
-    scrollTo({top: track.offsetTop + travel() * Math.min(1, Math.max(time, 0) / duration), behavior:'instant'});
+    const progress = Math.max(0, Math.min(1, time / duration));
+    scrollTo({top: track.offsetTop + runway.offsetHeight * progress, behavior: 'instant'});
   }
   function display(time) {
-    shownTime = time;
-    positionPin(time);
-    const index = services.reduce((prev, s, i) => s.start <= time ? i : prev, 0);
-    clock.textContent = stamp(time) + ' / ' + stamp(duration);
-    chapters.forEach((button, i) => {
-      const start = services[i].start;
-      const end = services[i+1]?.start ?? duration;
-      const fraction = Math.min(1, Math.max(0, (time - start) / (end - start)));
-      button.style.setProperty('--progress', (fraction * 100) + '%');
+    shown = time;
+    const index = tourChapters.findLastIndex(chapter => chapter.start <= time);
+    const chapter = tourChapters[index];
+    $('#clock').textContent = stamp(time) + ' / ' + stamp(duration);
+    chapterButtons.forEach((button, i) => {
+      const start = tourChapters[i].start;
+      const end = tourChapters[i+1]?.start ?? duration;
+      const progress = Math.min(1, Math.max(0, (time - start) / (end - start)));
+      button.style.setProperty('--progress', (progress * 100) + '%');
     });
     if (active === index) return;
     active = index;
-    const s = services[index];
-    screen.style.setProperty('--accent', s.color);
-    $('#title').textContent = s.title;
-    $('#category').textContent = s.category;
-    $('#summary').textContent = s.desc;
-    pin.href = $('#title').href = $('#explore').href = s.id + '.html';
-    pin.setAttribute('aria-label','Open ' + s.title.toLowerCase() + ' service');
-    chapters.forEach((b, i) => {
-      if (i === index) b.setAttribute('aria-current', 'step');
-      else b.removeAttribute('aria-current');
+    $('.tour').style.setProperty('--accent', chapter.color);
+    title.firstChild.textContent = chapter.name + ' ';
+    title.href = chapter.href;
+    chapterButtons.forEach((button, i) => {
+      if (i === index) button.setAttribute('aria-current','step');
+      else button.removeAttribute('aria-current');
     });
-    if (film.error) film.poster = s.id + '.jpg';
-    animate($('.caption'));
+    if (film.error) film.poster = ['arrival.jpg', 'cabin.jpg', 'bonnet-after.jpg'][index];
+    animate($('.film-title'));
   }
   function seek() {
     if (film.error || film.readyState < 1) { display(desired); return; }
-    if (!film.seeking && Math.abs(film.currentTime - desired) > .025) film.currentTime = desired;
+    if (!film.seeking && Math.abs(film.currentTime - desired) > .035) film.currentTime = desired;
     else if (!film.seeking) display(film.currentTime);
   }
   function update() {
     frame = 0;
-    desired = Math.min(duration - .04, Math.max(0, (scrollY - track.offsetTop) / travel() * duration));
+    desired = Math.min(duration - .04, Math.max(0, (scrollY - track.offsetTop) / Math.max(1, runway.offsetHeight) * duration));
     seek();
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(update); }
-  chapters.forEach((button, i) => button.onclick = () => jump(services[i].start + .18));
-  film.addEventListener('loadedmetadata', () => { duration = film.duration; update(); });
+  chapterButtons.forEach((button, i) => button.onclick = () => jump(tourChapters[i].start + .2));
+  film.addEventListener('loadedmetadata', () => { duration = film.duration; schedule(); });
   film.addEventListener('loadeddata', schedule);
   film.addEventListener('seeked', () => { display(film.currentTime); seek(); });
   film.addEventListener('error', () => { active = -1; display(desired); });
   addEventListener('scroll', schedule, {passive:true});
   addEventListener('resize', schedule);
-  for (const link of [$('#title'), $('#explore'), pin]) {
-    link.addEventListener('click', event => {
-      if (event.ctrlKey || event.shiftKey || event.metaKey || event.altKey) return;
-      event.preventDefault();
-      const url = new URL(link.href);
-      url.searchParams.set('t', shownTime.toFixed(3));
-      $('.caption').classList.add('leaving');
-      setTimeout(() => location.assign(url.href), matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 140);
-    });
+  addEventListener('pageshow', schedule);
+  title.addEventListener('click', event => {
+    const destination = new URL(tourChapters[active].href, location.href);
+    destination.searchParams.set('t', shown.toFixed(3));
+    title.href = destination.href;
+  });
+
+  function showMenu() {
+    const menu = $('#services');
+    const beforeMenu = menu.offsetTop;
+    scrollTo({top:track.offsetTop + runway.offsetHeight + beforeMenu, behavior:'instant'});
+    $('#menu-title').focus({preventScroll:true});
   }
-  const time = new URLSearchParams(location.search).get('t');
-  const stage = services.find(s => location.hash === '#stage-' + s.id);
-  if (!location.hash && time !== null && Number.isFinite(Number(time))) jump(Number(time));
-  else if (stage) jump(stage.start + .18);
+  all('a[href="#services"], a[href="index.html#services"]').forEach(link => link.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (location.hash !== '#services') history.pushState(null, '', '#services');
+    showMenu();
+  }));
+  function restorePosition() {
+    if (location.hash === '#services') { showMenu(); return; }
+    const time = new URLSearchParams(location.search).get('t');
+    if (!location.hash && time !== null && Number.isFinite(Number(time))) jump(Number(time));
+    const legacy = services.find(service => location.hash === '#stage-' + service.id);
+    if (legacy) jump(legacy.start + .2);
+  }
+  addEventListener('hashchange', restorePosition);
+  restorePosition();
   display(0);
   update();
-  addEventListener('pageshow', () => { $('.caption').classList.remove('leaving'); schedule(); });
-  const filters = all('[data-filter]');
-  filters.forEach((b, i) => b.onclick = () => {
-    pressed(filters, i);
-    all('[data-group]').forEach(card => card.hidden = i !== 0 && card.dataset.group !== b.dataset.filter);
-  });
   const slider = $('.compare input');
-  slider.oninput = () => $('.compare').style.setProperty('--cut', slider.value + '%');
+  slider.oninput = () => {
+    $('.compare').style.setProperty('--cut', slider.value + '%');
+    slider.setAttribute('aria-valuetext', slider.value + ' percent before');
+  };
 }
+
+const deck = $('.offer-deck');
+if (deck) {
+  const controls = all('[data-card-step]');
+  const cards = [...deck.children];
+  function currentCard() {
+    const left = deck.getBoundingClientRect().left;
+    return cards.reduce((best, card, i) =>
+      Math.abs(card.getBoundingClientRect().left-left) < Math.abs(cards[best].getBoundingClientRect().left-left) ? i : best, 0);
+  }
+  function updateButtons() {
+    controls[0].disabled = deck.scrollLeft < 2;
+    controls[1].disabled = deck.scrollLeft + deck.clientWidth >= deck.scrollWidth - 2;
+  }
+  controls.forEach(button => button.onclick = () => {
+    const i = Math.max(0, Math.min(cards.length-1, currentCard() + Number(button.dataset.cardStep)));
+    deck.scrollTo({left: cards[i].offsetLeft - cards[0].offsetLeft,
+      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+  });
+  deck.addEventListener('scroll', updateButtons, {passive:true});
+  new ResizeObserver(updateButtons).observe(deck);
+  updateButtons();
+}
+
 
 let renderPrices = () => {};
 const servicePage = $('.detail');
-if ($('.track')) startTour();
+if ($('.tour-track')) startTour();
 if (servicePage) {
   const s = serviceById.get(servicePage.dataset.service);
   const t = new URLSearchParams(location.search).get('t');
@@ -213,19 +235,6 @@ if (servicePage) {
     $('#added').textContent = priceFor(s,tier).name + ' saved to your basket.';
   };
 }
-if ($('.bundleGrid')) {
-  renderPrices = () => {
-    all('[data-total]').forEach((el,i) => {
-      const total = totals(bundles[i].items);
-      el.innerHTML = '<dt>Estimated price &amp; time</dt><dd>€' + total.price + ' · ' + total.minutes + ' min</dd>';
-      animate(el);
-    });
-  };
-  all('[data-bundle]').forEach((button,i) => button.onclick = () => {
-    mergeItems(bundles[i].items, true);
-    $('#added').textContent = bundles[i].label + ' added. Your basket contains ' + items.length + ' services.';
-  });
-}
 if ($('#lines')) {
   renderPrices = () => {
     const lines = $('#lines');
@@ -235,7 +244,7 @@ if ($('#lines')) {
       const offer = priceFor(service, item.pack);
       const row = document.createElement('article');
       row.className = 'line';
-      row.innerHTML = '<div><a href="'+service.id+'.html"><strong>'+service.title+' ↗</strong></a><small>€'+offer.price+' · '+offer.minutes+' min</small></div>';
+      row.innerHTML = '<div><a href="'+(service.href || service.id+'.html')+'"><strong>'+service.title+' ↗</strong></a><small>€'+offer.price+' · '+offer.minutes+' min</small></div>';
       const select = document.createElement('select');
       select.className = 'tierSelect';
       select.setAttribute('aria-label',service.title+' package');
@@ -243,14 +252,15 @@ if ($('#lines')) {
       select.onchange = () => {
         mergeItems([{id:item.id,pack:Number(select.value)}],false);
         renderPrices();
-        all('.tierSelect')[items.findIndex(v=>v.id===item.id)]?.focus();
+        all('.line')[items.findIndex(v=>v.id===item.id)]?.querySelector('select')?.focus();
       };
       const remove = document.createElement('button');
       remove.className = 'remove';
       remove.textContent = 'Remove';
       remove.setAttribute('aria-label', 'Remove '+service.title);
       remove.onclick = () => { const index=items.indexOf(item); updateItems(items.filter(v => v.id !== item.id)); renderPrices(); (all('.remove')[index] || all('.remove').at(-1) || $('.estimate .pill')).focus(); };
-      row.append(select, remove);
+      if (service.packages.length > 1) row.append(select);
+      row.append(remove);
       lines.append(row);
     }
     if (!items.length) lines.innerHTML = '<p class="empty">Your basket is empty. Choose a service or <a class="review" href="packages.html">compare packages</a> to start.</p>';
@@ -272,7 +282,33 @@ if ($('#lines')) {
     setTimeout(() => URL.revokeObjectURL(url), 30000);
   };
 }
+function refreshOffers() {
+  all('[data-offer-price]').forEach(label => {
+    label.textContent = '€' + priceFor(serviceById.get(label.dataset.offerPrice), 0).price;
+  });
+  all('[data-offer-time]').forEach(label => {
+    label.textContent = 'approx. ' + priceFor(serviceById.get(label.dataset.offerTime), 0).minutes + ' min';
+  });
+}
+all('[data-add-offer]').forEach(button => button.onclick = () => {
+  const offer = serviceById.get(button.dataset.addOffer);
+  // A full valet includes the mini. The two paint correction options also cover the same panels.
+  const next = items.filter(item => serviceById.get(item.id)?.group !== offer.group);
+  const old = items.find(item => item.id !== offer.id && serviceById.get(item.id)?.group === offer.group);
+  updateItems([...next, {id:offer.id, pack:0}]);
+  $('#added').textContent = old ? offer.title + ' replaces ' + serviceById.get(old.id).title + ' in your basket.'
+                                : offer.title + ' saved to your basket.';
+});
+const offerReturn = $('[data-tour-return]');
+if (offerReturn) {
+  const time = new URLSearchParams(location.search).get('t');
+  if (time !== null && Number.isFinite(Number(time))) offerReturn.href = 'index.html?t=' + encodeURIComponent(time);
+}
+const treatment = document.getElementById(location.hash.slice(1));
+if (treatment?.matches('details.treatment')) treatment.open = true;
+
 function syncControls() {
+  refreshOffers();
   refreshCount();
   all('.size').forEach(select => select.value = vehicle);
   renderPrices();

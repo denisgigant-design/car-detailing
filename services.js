@@ -396,75 +396,125 @@ const services = [
     "group": "Assessment & finish"
   }
 ];
-const bundles = [
+const valetOffers = [
   {
-    "label": "Exterior refresh",
-    "desc": "The wash sequence for routine road film.",
-    "items": [
-      {
-        "id": "inspection",
-        "pack": 0
-      },
-      {
-        "id": "foam",
-        "pack": 0
-      },
-      {
-        "id": "rinse",
-        "pack": 0
-      },
-      {
-        "id": "finish",
-        "pack": 0
-      }
+    "id": "mini-valet",
+    "title": "Mini Valet",
+    "prices": [
+      70,
+      80,
+      90
+    ],
+    "times": [
+      60,
+      75,
+      90
+    ],
+    "group": "valet",
+    "href": "mini-valet.html",
+    "packages": [
+      [
+        "Mini Valet",
+        70,
+        60,
+        "A hand wash outside and a fresh cabin inside."
+      ]
     ]
   },
   {
-    "label": "Cabin reset",
-    "desc": "Dry cleaning for seats, carpets and the boot.",
-    "items": [
-      {
-        "id": "inspection",
-        "pack": 0
-      },
-      {
-        "id": "vacuum",
-        "pack": 1
-      },
-      {
-        "id": "finish",
-        "pack": 0
-      }
+    "id": "full-valet",
+    "title": "Full Valet",
+    "prices": [
+      135,
+      150,
+      170
+    ],
+    "times": [
+      150,
+      180,
+      210
+    ],
+    "group": "valet",
+    "href": "full-valet.html",
+    "packages": [
+      [
+        "Full Valet",
+        135,
+        150,
+        "A deeper clean for the seats, carpets and boot."
+      ]
     ]
   },
   {
-    "label": "Studio detail",
-    "desc": "The full film sequence, including bonnet refinement.",
-    "items": [
-      {
-        "id": "inspection",
-        "pack": 0
-      },
-      {
-        "id": "foam",
-        "pack": 0
-      },
-      {
-        "id": "rinse",
-        "pack": 0
-      },
-      {
-        "id": "vacuum",
-        "pack": 0
-      },
-      {
-        "id": "polish",
-        "pack": 0
-      },
-      {
-        "id": "finish",
-        "pack": 0
-      }
+    "id": "headlights",
+    "title": "Headlight restoration",
+    "prices": [
+      80,
+      80,
+      80
+    ],
+    "times": [
+      120,
+      120,
+      120
+    ],
+    "group": "lights",
+    "href": "extras.html#headlights",
+    "packages": [
+      [
+        "Headlight restoration",
+        80,
+        120,
+        "Clear cloudy outer lenses and renew their UV protection."
+      ]
+    ]
+  },
+  {
+    "id": "machine-polish",
+    "title": "One-step machine polish",
+    "prices": [
+      225,
+      250,
+      280
+    ],
+    "times": [
+      180,
+      210,
+      240
+    ],
+    "group": "paint",
+    "href": "extras.html#machine-polish",
+    "packages": [
+      [
+        "One-step machine polish",
+        225,
+        180,
+        "One machine-polishing stage to lift gloss and soften light swirls."
+      ]
+    ]
+  },
+  {
+    "id": "three-step",
+    "title": "Three-step compound",
+    "prices": [
+      450,
+      490,
+      540
+    ],
+    "times": [
+      360,
+      390,
+      420
+    ],
+    "group": "paint",
+    "href": "extras.html#three-step",
+    "packages": [
+      [
+        "Three-step compound",
+        450,
+        360,
+        "Cut, refine and finish paintwork with more visible swirling."
+      ]
     ]
   }
 ];
